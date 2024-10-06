@@ -1,0 +1,28 @@
+project_name: "argocd-oci-plugin"
+
+builds:
+- binary: "argocd-oci-plugin"
+  flags: "-trimpath"
+  ldflags: >-
+    -s -w -X "github.com/ya-makariy/argocd-oci-plugin/version.Version={{.Tag}}" -X "github.com/ya-makariy/argocd-oci-plugin/version.BuildDate={{.Date}}" -X "github.com/ya-makariy/argocd-oci-plugin/version.CommitSHA={{.Commit}}"
+  env:
+  - "CGO_ENABLED=0"
+  goos:
+  - darwin
+  - linux
+  goarch:
+  - amd64
+  - arm64
+  - s390x
+  ignore:
+  - goos: darwin
+    goarch: s390x
+  tags:
+  - netgo
+  - static_build
+
+archives:
+- format: binary
+
+changelog:
+  skip: true
