@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+
+      # Mount SA token for Kubernets auth
+      # Note: In 2.4.0 onward, there is a dedicated SA for repo-server (not default)
+      # Note: This is not fully supported for Kubernetes < v1.19
+      automountServiceAccountToken: true
+
+      # Each of the embedded YAMLs inside cmp-plugin ConfigMap will be mounted into it's respective plugin sidecar
+      volumes:
+      - configMap:
+          name: cmp-plugin
+        name: cmp-plugin
+      - name: custom-tools
+        emptyDir: {}
+      - name: custom-tools-yq
+        emptyDir: {}
+
+      initContainers:
+      - name: download-tools
+        image: alpine:3.8
+        command: [sh, -c]
+
+        # Don't forget to update this to whatever the stable release version is
+        # Note the lack of the `v` prefix unlike the git tag
+        env:
+        - name: AOP_VERSION
+          value: "0.0.1"
+        - name: YQ_VERSION
+          value: "v4.44.3"
+        args:
+        - >-
+          wget https://github.com/ya-makariy/argocd-oci-plugin/releases/download/v$(AOP_VERSION)/argocd-oci-plugin_$(AOP_VERSION)_linux_amd64 -O /custom-tools/argocd-oci-plugin && chmod +x /custom-tools/argocd-oci-plugin
+        - >-
+          wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /custom-tools-yq/yq && chmod +x /custom-tools-yq/yq
+        volumeMounts:
+        - mountPath: /custom-tools
+          name: custom-tools
+        - mountPath: /custom-tools-yq
+          name: custom-tools-yq
+
+      containers:
+      - name: aop-helm
+        command: [/var/run/argocd/argocd-cmp-server]
+        image: quay.io/argoproj/argocd:v2.7.9
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /tmp
+          name: tmp
+
+        # Register plugins into sidecar
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: aop-helm.yaml
+          name: cmp-plugin
+
+        # Important: Mount tools into $PATH
+        - name: custom-tools
+          subPath: argocd-oci-plugin
+          mountPath: /usr/local/bin/argocd-oci-plugin
+        - name: custom-tools-yq
+          subPath: yq
+          mountPath: /usr/local/bin/yq
+
+      # oras with plain YAML
+      - name: aop
+        command: [/var/run/argocd/argocd-cmp-server]
+        image: quay.io/argoproj/argocd:v2.7.9
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+        - mountPath: /home/argocd/cmp-server/plugins
+          name: plugins
+        - mountPath: /tmp
+          name: tmp
+
+        # Register plugins into sidecar
+        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+          subPath: aop.yaml
+          name: cmp-plugin
+
+        # Important: Mount tools into $PATH
+        - name: custom-tools
+          subPath: argocd-oci-plugin
+          mountPath: /usr/local/bin/argocd-oci-plugin
+        - name: custom-tools-yq
+          subPath: yq
+          mountPath: /usr/local/bin/yq
