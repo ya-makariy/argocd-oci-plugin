@@ -1,6 +1,6 @@
 # argocd-oci-plugin
 
-<img srs="https://github.com/ya-makariy/argocd-oci-plugin/raw/main/assets/logo.png" width="300">
+<img src="https://github.com/ya-makariy/argocd-oci-plugin/blob/main/assets/logo.png?raw=true" width="300" title="logo">
 
 An Argo CD plugin to retrieve files from OCI-based registries
 
