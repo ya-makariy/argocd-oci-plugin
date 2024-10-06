@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/ya-makariy/argocd-oci-plugin/pkg/config"
-	"github.com/ya-makariy/argocd-oci-plugin/pkg/types"
 	"oras.land/oras-go/v2/registry/remote"
 )
 
@@ -40,7 +39,6 @@ func NewPullCommand() *cobra.Command {
 			v := viper.New()
 			viper.Set("verboseOutput", verboseOutput)
 			viper.Set("disableCache", disableCache)
-			viper.SetDefault(types.EnvFsPath, types.DefaultFsPath)
 			cmdConfig, err := config.New(v, &config.Options{
 				SecretName: secretName,
 				ConfigPath: configPath,

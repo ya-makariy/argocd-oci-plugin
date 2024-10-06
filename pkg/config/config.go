@@ -45,6 +45,7 @@ func New(v *viper.Viper, co *Options) (*Config, error) {
 
 	var backend types.Backend
 
+	v.SetDefault(types.EnvFsPath, types.DefaultFsPath)
 	fspath := v.GetString(types.EnvFsPath)
 
 	credential := auth.EmptyCredential
