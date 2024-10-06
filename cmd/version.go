@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/ya-makriy/argocd-oci-plugin/version"
+	"github.com/ya-makariy/argocd-oci-plugin/version"
 )
 
 // NewVersionCommand returns a new instance of the version command

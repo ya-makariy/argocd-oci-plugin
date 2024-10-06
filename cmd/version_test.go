@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ya-makriy/argocd-oci-plugin/version"
+	"github.com/ya-makariy/argocd-oci-plugin/version"
 )
 
 func TestVersion(t *testing.T) {

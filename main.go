@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/ya-makriy/argocd-oci-plugin/cmd"
+	cmd "github.com/ya-makariy/argocd-oci-plugin/cmd"
 )
 
 func main() {
