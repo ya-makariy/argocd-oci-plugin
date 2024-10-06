@@ -1,4 +1,5 @@
 project_name: "argocd-oci-plugin"
+version: 2
 
 builds:
 - binary: "argocd-oci-plugin"
