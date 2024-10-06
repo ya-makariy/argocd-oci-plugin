@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmp-plugin
+data:
+  oras-helm.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-oci-plugin-helm
+    spec:
+      allowConcurrency: true
+      discover:
+        find:
+          command:
+            - sh
+            - "-c"
+            - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+      generate:
+        command:
+          - sh
+          - "-c"
+          - |
+            argocd-oci-plugin pull ${ARGOCD_ENV_AOP_REPOSITORY}:${ARGOCD_ENV_AOP_TAG} &&
+            for f in ${ARGOCD_ENV_AOP_FS_PATH:-./oci-files/}/*; do AOP_ARGS+="-f $f "; done
+            helm template "$ARGOCD_APP_NAME" . -n "$ARGOCD_APP_NAMESPACE" ${AOP_ARGS} ${ARGOCD_ENV_HELM_ARGS} |
+            yq -o=json
+      lockRepo: false
+  oras.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-oci-plugin
+    spec:
+      allowConcurrency: true
+      generate:
+        command:
+          - sh
+          - "-c"
+          - |
+            argocd-oci-plugin pull ${ARGOCD_ENV_AOP_REPOSITORY}:${ARGOCD_ENV_AOP_TAG} &&
+            cat ${ARGOCD_ENV_AOP_FS_PATH:-./oci-files}/* | yq -o=json
+      lockRepo: false
+---
