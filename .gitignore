@@ -32,3 +32,6 @@ go.work.sum
 # Project workspaces
 .idea
 .vscode
+
+# goreleaser should ignore
+RELEASE_CHANGELOG.md
