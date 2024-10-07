@@ -35,9 +35,7 @@ spec:
           value: "v4.44.3"
         args:
         - >-
-          wget https://github.com/ya-makariy/argocd-oci-plugin/releases/download/v$(AOP_VERSION)/argocd-oci-plugin_$(AOP_VERSION)_linux_amd64 -O /custom-tools/argocd-oci-plugin && chmod +x /custom-tools/argocd-oci-plugin
-        - >-
-          wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /custom-tools-yq/yq && chmod +x /custom-tools-yq/yq
+          wget https://github.com/ya-makariy/argocd-oci-plugin/releases/download/v$(AOP_VERSION)/argocd-oci-plugin_$(AOP_VERSION)_linux_amd64 -O /custom-tools/argocd-oci-plugin && chmod +x /custom-tools/argocd-oci-plugin; wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O /custom-tools-yq/yq && chmod +x /custom-tools-yq/yq
         volumeMounts:
         - mountPath: /custom-tools
           name: custom-tools
